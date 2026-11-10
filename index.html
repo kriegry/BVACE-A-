@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BVACE AI Core - Collective Brain</title>
+    <style>
+        :root {
+            --bg-color: #0b0d14;
+            --panel-bg: #121520;
+            --card-bg: #1a1e2e;
+            --primary: #00f0ff;
+            --secondary: #7000ff;
+            --success: #00ff88;
+            --danger: #ff4757;
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+            --border: #262d42;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 255, 136, 0.15);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            display: none;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .sidebar {
+            width: 320px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-svg {
+            width: 44px;
+            height: 44px;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4));
+        }
+
+        .logo-title h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-title span {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            display: block;
+        }
+
+        .section-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .section-box h3 {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], textarea {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 9px 12px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), #4b0082);
+            color: white;
+            border: none;
+            padding: 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--primary);
+            line-height: 1.4;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .report-item {
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .msg {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--secondary), #4b0082);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg.bvace {
+            align-self: flex-start;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-tag {
+            display: block;
+            font-size: 0.7rem;
+            margin-top: 6px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .chat-input-bar {
+            padding: 16px 24px;
+            background-color: var(--panel-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .chat-input-bar input {
+            flex: 1;
+        }
+
+        .report-icon-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px 4px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .dev-link {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-align: center;
+            margin-top: auto;
+            padding: 5px;
+        }
+        .dev-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="toast">✅ Başarıyla öğrenildi ve sisteme işlendi!</div>
+
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <h3 style="color:var(--danger); font-size: 0.9rem;">⚠️ Rapor Edilen Saçma İçerikler</h3>
+            <div id="reportList" style="display:flex; flex-direction:column; gap:8px;"></div>
+            <button class="btn-primary" onclick="toggleReportModal()" style="margin-top: 10px;">Kapat</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo-box">
+            <svg class="logo-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#bvace-grad)" stroke-width="3"/>
+                <circle cx="50" cy="50" r="32" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="6,4"/>
+                <polygon points="50,18 78,72 22,72" fill="none" stroke="#7000ff" stroke-width="2.5"/>
+                <circle cx="50" cy="50" r="10" fill="#00f0ff"/>
+                <defs>
+                    <linearGradient id="bvace-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00f0ff"/>
+                        <stop offset="100%" stop-color="#7000ff"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="logo-title">
+                <h1>BVACE</h1>
+                <span>COLLECTIVE BRAIN</span>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Bvace'ye Laf Öğret</h3>
+            <input type="text" id="konuInput" placeholder="Kullanıcı derse ki...">
+            <textarea id="bilgiInput" placeholder="Bvace desin ki..." style="height: 60px; resize: none;"></textarea>
+            <button class="btn-primary" onclick="ortakHafizayaOgret()">Ortak Havuza Öğret</button>
+        </div>
+
+        <div class="section-box">
+            <h3>Çekirdek Durumu</h3>
+            <div class="status-box">
+                🌐 Ortak Ağ: <strong id="nodeCount">0</strong> Laf<br>
+                🔒 Sistem: Güvenli
+            </div>
+            
+            <!-- ADMIN PANEL BUTONU - KESİNLİKLE VARSAYILAN OLARAK GİZLİ -->
+            <div id="adminPanelArea" style="display: none; margin-top: 5px;">
+                <button class="btn-danger" style="width: 100%;" onclick="toggleReportModal()">🚨 Rapor Paneli (<span id="reportCount">0</span>)</button>
+            </div>
+        </div>
+
+        <div class="dev-link" id="devBtn" onclick="handleDevClick()">🔑 Geliştirici Girişi</div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-history" id="chatBox">
+            <div class="msg bvace">
+                Ben Bvace. Herkesin bana öğretebileceği bir sohbet botuyum, kokokae tarafından geliştirildim. Bana bir şey sor veya sol panelden yeni laf öğret.
+            </div>
+        </div>
+
+        <div class="chat-input-bar">
+            <input type="text" id="userInput" placeholder="Bvace ile konuş..." onkeypress="if(event.key==='Enter') mesajGonder()">
+            <button class="btn-primary" onclick="mesajGonder()" style="padding: 0 20px;">Gönder</button>
+        </div>
+    </div>
+
+    <script>
+        // BELLEK VE YEREL VERİLER
+        let sharedMemory = JSON.parse(localStorage.getItem('bvace_shared_db')) || {
+            "sa": "Aleyküm selam, naber?",
+            "as": "Eyvallah, hoş geldin!",
+            "selam": "Selam! Nasıl yardımcı olayım?",
+            "merhaba": "Merhaba, sistemler aktif.",
+            "naber": "İyidir senden naber?",
+            "bok": "lala"
+        };
+
+        let reportedItems = JSON.parse(localStorage.getItem('bvace_reports')) || [];
+
+        // ADMIN KONTROLÜ
+        function checkAdminState() {
+            const isAdmin = localStorage.getItem('bvace_is_admin') === 'true';
+            const adminArea = document.getElementById('adminPanelArea');
+            const devBtn = document.getElementById('devBtn');
+
+            if (isAdmin) {
+                adminArea.style.display = 'block';
+                devBtn.innerText = '🔒 Çıkış Yap (Admin)';
+                document.querySelectorAll('.report-icon-btn').forEach(btn => btn.style.display = 'inline-block');
+            } else {
+                adminArea.style.display = 'none';
+                devBtn.innerText = '🔑 Geliştirici Girişi';
+                document.querySelectorAll('.report-icon-btn').forEach(btn => btn.style.display = 'none');
+            }
+        }
+
+        function handleDevClick() {
+            const isAdmin = localStorage.getItem('bvace_is_admin') === 'true';
+
+            if (isAdmin) {
+                // Zaten adminse tıklayınca ÇIKIŞ yapar
+                localStorage.removeItem('bvace_is_admin');
+                checkAdminState();
+                showToast("🚪 Geliştirici çıkışı yapıldı.");
+            } else {
+                // Admin değilse ŞİFRE sorar
+                const sifre = prompt("Geliştirici Şifresini Girin:");
+                if (sifre === "bvaceAndKOKOKAE123") {
+                    localStorage.setItem('bvace_is_admin', 'true');
+                    checkAdminState();
+                    showToast("⚡ Yönetici modu aktif edildi!");
+                } else if (sifre) {
+                    alert("Hatalı Şifre!");
+                }
+            }
+        }
+
+        // BİLDİRİM VE SOHBET FONKSİYONLARI
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function appendChat(sender, text, tag = null, keyToReport = null) {
+            const chatBox = document.getElementById('chatBox');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${sender}`;
+            
+            let html = text;
+            if (tag) {
+                html += `<span class="msg-tag">${tag}</span>`;
+            }
+
+            if (keyToReport && sender === 'bvace') {
+                const isAdmin = localStorage.getItem('bvace_is_admin') === 'true';
+                const btnDisplay = isAdmin ? 'inline-block' : 'none';
+                html += `<br><button class="report-icon-btn" style="display:${btnDisplay};" onclick="reportKey('${keyToReport}')">🚨 Rapor Et</button>`;
+            }
+            
+            msgDiv.innerHTML = html;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function ortakHafizayaOgret() {
+            const soru = document.getElementById('konuInput').value.trim().toLowerCase();
+            const cevap = document.getElementById('bilgiInput').value.trim();
+
+            if (!soru || !cevap) return;
+
+            sharedMemory[soru] = cevap;
+            localStorage.setItem('bvace_shared_db', JSON.stringify(sharedMemory));
+
+            document.getElementById('konuInput').value = '';
+            document.getElementById('bilgiInput').value = '';
+
+            showToast("✅ Başarıyla öğrenildi ve sisteme işlendi!");
+            guncelleNodeSayisi();
+        }
+
+        function guncelleNodeSayisi() {
+            document.getElementById('nodeCount').innerText = Object.keys(sharedMemory).length;
+            document.getElementById('reportCount').innerText = reportedItems.length;
+        }
+
+        function reportKey(key) {
+            if (!reportedItems.includes(key)) {
+                reportedItems.push(key);
+                localStorage.setItem('bvace_reports', JSON.stringify(reportedItems));
+                guncelleNodeSayisi();
+                showToast("🚨 Şikayet yönetici paneline iletildi.");
+            } else {
+                showToast("⚠️ Bu içerik zaten rapor edilmiş.");
+            }
+        }
+
+        function toggleReportModal() {
+            const modal = document.getElementById('reportModal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                renderReports();
+                modal.style.display = 'flex';
+            }
+        }
+
+        function renderReports() {
+            const list = document.getElementById('reportList');
+            list.innerHTML = '';
+            if (reportedItems.length === 0) {
+                list.innerHTML = `<div style="color:var(--text-dim); font-size:0.8rem;">Bildirilen saçma içerik yok.</div>`;
+                return;
+            }
+            reportedItems.forEach((item, index) => {
+                list.innerHTML += `
+                    <div class="report-item">
+                        <span>Sözcük: <strong>${item}</strong> (Yanıt: ${sharedMemory[item] || 'Silinmiş'})</span>
+                        <button class="btn-danger" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteReported('${item}', ${index})">Sil</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteReported(key, index) {
+            delete sharedMemory[key];
+            localStorage.setItem('bvace_shared_db', JSON.stringify(sharedMemory));
+            reportedItems.splice(index, 1);
+            localStorage.setItem('bvace_reports', JSON.stringify(reportedItems));
+            guncelleNodeSayisi();
+            renderReports();
+            showToast("🗑️ Saçma içerik hafızadan silindi.");
+        }
+
+        function mesajGonder() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendChat('user', text);
+            input.value = '';
+
+            const textLower = text.toLowerCase().trim();
+            let foundKey = Object.keys(sharedMemory).find(k => textLower === k || textLower.includes(k));
+
+            if (foundKey && sharedMemory[foundKey]) {
+                setTimeout(() => {
+                    appendChat('bvace', sharedMemory[foundKey], '💬 BVACE ORTAK BEYİN', foundKey);
+                }, 200);
+            } else {
+                setTimeout(() => {
+                    appendChat('bvace', `Bu ifadeyi henüz öğrenmedim. Sol panelden öğretebilirsin.`);
+                }, 200);
+            }
+        }
+
+        // KORUMALAR (Ctrl+U, F12 vb.)
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123 || 
+                (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // BAŞLANGIÇ ÇALIŞTIRMALARI
+        guncelleNodeSayisi();
+        checkAdminState();
+    </script>
+</body>
+</html>
