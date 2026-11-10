@@ -31,6 +31,7 @@
             color: var(--text);
             display: flex;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
         }
 
@@ -60,6 +61,7 @@
             padding: 20px;
             gap: 15px;
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         .logo-box {
@@ -113,6 +115,7 @@
             border-radius: 6px;
             outline: none;
             font-size: 0.85rem;
+            width: 100%;
         }
 
         input:focus, textarea:focus {
@@ -171,7 +174,8 @@
             border: 1px solid var(--border);
             padding: 20px;
             border-radius: 10px;
-            width: 400px;
+            width: 90%;
+            max-width: 400px;
             max-height: 80vh;
             overflow-y: auto;
             display: flex;
@@ -195,11 +199,12 @@
             display: flex;
             flex-direction: column;
             background-color: var(--bg-color);
+            min-width: 0;
         }
 
         .chat-history {
             flex: 1;
-            padding: 24px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -207,7 +212,7 @@
         }
 
         .msg {
-            max-width: 75%;
+            max-width: 85%;
             padding: 12px 16px;
             border-radius: 10px;
             font-size: 0.95rem;
@@ -238,11 +243,11 @@
         }
 
         .chat-input-bar {
-            padding: 16px 24px;
+            padding: 12px 16px;
             background-color: var(--panel-bg);
             border-top: 1px solid var(--border);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
         }
 
@@ -271,6 +276,34 @@
         }
         .dev-link:hover {
             color: var(--primary);
+        }
+
+        /* MOBİL UYUMLULUK (RESPONSIVE) AYARI */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 35vh;
+                padding: 12px;
+                gap: 10px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .logo-box {
+                padding-bottom: 8px;
+            }
+            .logo-svg {
+                width: 32px;
+                height: 32px;
+            }
+            .logo-title h1 {
+                font-size: 1.1rem;
+            }
+            .chat-container {
+                height: 65vh;
+            }
         }
     </style>
 </head>
@@ -309,20 +342,16 @@
         <div class="section-box">
             <h3>Bvace'ye Laf Öğret</h3>
             <input type="text" id="konuInput" placeholder="Kullanıcı derse ki...">
-            <textarea id="bilgiInput" placeholder="Bvace desin ki..." style="height: 60px; resize: none;"></textarea>
+            <textarea id="bilgiInput" placeholder="Bvace desin ki..." style="height: 45px; resize: none;"></textarea>
             <button class="btn-primary" onclick="ortakHafizayaOgret()">Ortak Havuza Öğret</button>
         </div>
 
-        <div class="section-box">
-            <h3>Çekirdek Durumu</h3>
+        <div class="section-box" style="gap: 4px;">
             <div class="status-box">
-                🌐 Ortak Ağ: <strong id="nodeCount">0</strong> Laf<br>
-                🔒 Sistem: Güvenli
+                🌐 Ortak Ağ: <strong id="nodeCount">0</strong> Laf | 🔒 Güvenli
             </div>
-            
-            <!-- ADMIN PANEL BUTONU - KESİNLİKLE VARSAYILAN OLARAK GİZLİ -->
-            <div id="adminPanelArea" style="display: none; margin-top: 5px;">
-                <button class="btn-danger" style="width: 100%;" onclick="toggleReportModal()">🚨 Rapor Paneli (<span id="reportCount">0</span>)</button>
+            <div id="adminPanelArea" style="display: none;">
+                <button class="btn-danger" style="width: 100%; padding: 6px;" onclick="toggleReportModal()">🚨 Rapor Paneli (<span id="reportCount">0</span>)</button>
             </div>
         </div>
 
@@ -338,12 +367,11 @@
 
         <div class="chat-input-bar">
             <input type="text" id="userInput" placeholder="Bvace ile konuş..." onkeypress="if(event.key==='Enter') mesajGonder()">
-            <button class="btn-primary" onclick="mesajGonder()" style="padding: 0 20px;">Gönder</button>
+            <button class="btn-primary" onclick="mesajGonder()" style="padding: 0 16px; height: 38px;">Gönder</button>
         </div>
     </div>
 
     <script>
-        // BELLEK VE YEREL VERİLER
         let sharedMemory = JSON.parse(localStorage.getItem('bvace_shared_db')) || {
             "sa": "Aleyküm selam, naber?",
             "as": "Eyvallah, hoş geldin!",
@@ -355,7 +383,6 @@
 
         let reportedItems = JSON.parse(localStorage.getItem('bvace_reports')) || [];
 
-        // ADMIN KONTROLÜ
         function checkAdminState() {
             const isAdmin = localStorage.getItem('bvace_is_admin') === 'true';
             const adminArea = document.getElementById('adminPanelArea');
@@ -376,12 +403,10 @@
             const isAdmin = localStorage.getItem('bvace_is_admin') === 'true';
 
             if (isAdmin) {
-                // Zaten adminse tıklayınca ÇIKIŞ yapar
                 localStorage.removeItem('bvace_is_admin');
                 checkAdminState();
                 showToast("🚪 Geliştirici çıkışı yapıldı.");
             } else {
-                // Admin değilse ŞİFRE sorar
                 const sifre = prompt("Geliştirici Şifresini Girin:");
                 if (sifre === "bvaceAndKOKOKAE123") {
                     localStorage.setItem('bvace_is_admin', 'true');
@@ -393,7 +418,6 @@
             }
         }
 
-        // BİLDİRİM VE SOHBET FONKSİYONLARI
         function showToast(text) {
             const toast = document.getElementById('toast');
             toast.innerText = text;
@@ -513,7 +537,6 @@
             }
         }
 
-        // KORUMALAR (Ctrl+U, F12 vb.)
         document.addEventListener('keydown', function(e) {
             if (e.keyCode === 123 || 
                 (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) || 
@@ -523,7 +546,6 @@
             }
         });
 
-        // BAŞLANGIÇ ÇALIŞTIRMALARI
         guncelleNodeSayisi();
         checkAdminState();
     </script>
