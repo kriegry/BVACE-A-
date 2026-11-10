@@ -3,39 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BVACE AI Core - Cloud Edition</title>
+    <title>BVACE AI - Cloud Collective Brain</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: monospace; }
-        body { background-color: #0f172a; color: #38bdf8; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: #1e293b; padding: 15px; text-align: center; border-bottom: 2px solid #334155; font-size: 1.2rem; font-weight: bold; }
-        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 15px; border-radius: 8px; max-width: 80%; word-wrap: break-word; }
-        .user { background: #334155; color: #f8fafc; align-self: flex-end; }
-        .bot { background: #1e293b; color: #38bdf8; align-self: flex-start; border: 1px solid #334155; }
-        #input-container { display: flex; padding: 15px; background: #1e293b; border-top: 2px solid #334155; gap: 10px; }
-        input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #475569; color: #f8fafc; border-radius: 6px; outline: none; font-size: 1rem; }
-        button { padding: 12px 20px; background: #0284c7; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0369a1; }
-        #admin-panel { padding: 10px; background: #0f172a; border-top: 1px solid #334155; display: none; text-align: center; }
-        #report-btn { position: fixed; top: 10px; right: 10px; background: #ef4444; font-size: 0.8rem; padding: 5px 10px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: #f8fafc; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Header */
+        header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 15px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.3rem; font-weight: bold; letter-spacing: 1px; color: #a855f7; display: flex; justify-content: space-between; align-items: center; }
+        header span { font-size: 0.8rem; background: #3b82f6; padding: 3px 8px; border-radius: 12px; color: white; }
+
+        /* Chat Area */
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        
+        .message { padding: 12px 18px; border-radius: 15px; max-width: 75%; word-wrap: break-word; font-size: 0.95rem; line-height: 1.4; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .user { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .bot { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        /* Input Area */
+        #input-container { display: flex; padding: 15px 20px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); gap: 10px; }
+        input[type="text"] { flex: 1; padding: 14px 18px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; outline: none; font-size: 1rem; transition: 0.3s; }
+        input[type="text"]:focus { border-color: #a855f7; box-shadow: 0 0 10px rgba(168, 85, 247, 0.2); }
+        
+        button { padding: 0 22px; background: linear-gradient(135deg, #9333ea, #3b82f6); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* Admin Panel / Button */
+        #report-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; font-size: 0.75rem; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+        #admin-panel { padding: 10px 20px; background: #0f172a; border-top: 1px solid rgba(255,255,255,0.05); display: none; text-align: center; gap: 10px; }
+        #admin-panel input { width: 200px; display: inline-block; padding: 8px; }
     </style>
 </head>
 <body>
 
-    <header>BVACE - Cloud Collective Brain</header>
-    <button id="report-btn" onclick="openAdmin()">Admin</button>
+    <header>
+        BVACE AI
+        <span id="cloud-status">Bulut: Bağlanıyor...</span>
+        <button id="report-btn" onclick="openAdmin()">Admin</button>
+    </header>
 
     <div id="chat-container">
-        <div class="message bot">Selam kanka! Ben BVACE. Artık bulut tabanlı ortak beyinle çalışıyorum. Bana bir şeyler öğretebilir ya da soru sorabilirsin!</div>
+        <div class="message bot">Selam kanka! Eski şık tasarımıma geri döndüm ve arkaya Firebase bulutunu bağladım. Artık her yerden ortak öğreniyoruz!</div>
     </div>
 
     <div id="admin-panel">
         <input type="password" id="admin-pass" placeholder="Admin Şifresi...">
-        <button onclick="checkAdmin()">Giriş</button>
+        <button onclick="checkAdmin()">Giriş Yap</button>
     </div>
 
     <div id="input-container">
-        <input type="text" id="user-input" placeholder="Mesajını yaz veya 'Soru | Cevap' formatında öğret..." onkeypress="handleKey(event)">
+        <input type="text" id="user-input" placeholder="Mesaj yaz veya 'Soru | Cevap' ile öğret..." onkeypress="handleKey(event)">
         <button onclick="sendMessage()">Gönder</button>
     </div>
 
@@ -44,7 +62,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Senin Firebase Bağlantı Ayarların
         const firebaseConfig = {
             apiKey: "AIzaSyDPoguXj6pEv_N5pDmLW05cyM_7HZB3_k",
             authDomain: "bvace-cloud.firebaseapp.com",
@@ -58,16 +75,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Global fonksiyonlar için window'a atıyoruz
         window.bvaceDB = db;
         window.bvaceFirestore = { collection, addDoc, getDocs };
         
-        // İlk açılışta buluttan hafızayı çek
         loadCloudMemory();
     </script>
 
     <script>
-        // Bellek havuzu
         let cloudMemory = [];
 
         async function loadCloudMemory() {
@@ -81,8 +95,9 @@
                 querySnapshot.forEach((doc) => {
                     cloudMemory.push(doc.data());
                 });
+                document.getElementById("cloud-status").innerText = "Bulut: Aktif 🚀";
             } catch (e) {
-                console.log("Buluttan veri çekerken hata:", e);
+                document.getElementById("cloud-status").innerText = "Bulut: Hata!";
             }
         }
 
@@ -94,7 +109,6 @@
             appendMessage(text, "user");
             inputField.value = "";
 
-            // Öğretme formatı: "Soru | Cevap"
             if (text.includes("|")) {
                 const parts = text.split("|");
                 const q = parts[0].trim().toLowerCase();
@@ -103,14 +117,13 @@
                 try {
                     await window.bvaceFirestore.addDoc(window.bvaceFirestore.collection(window.bvaceDB, "memory"), { soru: q, cevap: a });
                     cloudMemory.push({ soru: q, cevap: a });
-                    appendMessage("Eyvallah kanka, bunu buluta kaydettim artık herkes bilecek!", "bot");
+                    appendMessage("Eyvallah kanka, bunu buluta kaydettim artık tüm cihazlar bilecek!", "bot");
                 } catch (e) {
                     appendMessage("Kanka buluta kaydederken hata oluştu!", "bot");
                 }
                 return;
             }
 
-            // Normal soru sorma
             const cleanText = text.toLowerCase();
             let found = cloudMemory.find(item => cleanText.includes(item.soru));
 
@@ -139,11 +152,17 @@
         }
 
         function openAdmin() {
-            const pass = prompt("Admin Şifresini Gir:");
+            const panel = document.getElementById("admin-panel");
+            panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+        }
+
+        function checkAdmin() {
+            const pass = document.getElementById("admin-pass").value;
             if (pass === "bvaceAndKOKOKAE123") {
-                alert("Admin paneli aktif! (Geliştirme aşamasında)");
-            } else if (pass !== null) {
-                alert("Hatalı şifre!");
+                alert("Admin paneli başarıyla açıldı!");
+                document.getElementById("admin-panel").style.display = "none";
+            } else {
+                alert("Hatalı şifre kanka!");
             }
         }
     </script>
