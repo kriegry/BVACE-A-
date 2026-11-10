@@ -3,58 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BVACE AI - Cloud Collective Brain</title>
+    <title>BVACE AI - Collective Brain</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: #f8fafc; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Header */
-        header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 15px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.3rem; font-weight: bold; letter-spacing: 1px; color: #a855f7; display: flex; justify-content: space-between; align-items: center; }
-        header span { font-size: 0.8rem; background: #3b82f6; padding: 3px 8px; border-radius: 12px; color: white; }
+        body { background-color: #0b0f19; color: #e2e8f0; display: flex; height: 100vh; overflow: hidden; }
 
-        /* Chat Area */
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        
-        .message { padding: 12px 18px; border-radius: 15px; max-width: 75%; word-wrap: break-word; font-size: 0.95rem; line-height: 1.4; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .user { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-        .bot { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        /* Sol Sidebar */
+        #sidebar { width: 300px; background: #111827; border-right: 1px solid #1f2937; display: flex; flex-direction: column; padding: 20px; gap: 15px; }
+        .logo-area { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .logo-icon { width: 40px; height: 40px; border: 2px solid #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #6366f1; font-weight: bold; box-shadow: 0 0 10px rgba(99,102,241,0.3); }
+        .logo-text h1 { font-size: 1.1rem; color: white; letter-spacing: 1px; }
+        .logo-text p { font-size: 0.7rem; color: #9ca3af; }
 
-        /* Input Area */
-        #input-container { display: flex; padding: 15px 20px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); gap: 10px; }
-        input[type="text"] { flex: 1; padding: 14px 18px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; outline: none; font-size: 1rem; transition: 0.3s; }
-        input[type="text"]:focus { border-color: #a855f7; box-shadow: 0 0 10px rgba(168, 85, 247, 0.2); }
+        .section-title { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; font-weight: bold; margin-top: 5px; letter-spacing: 0.5px; }
         
-        button { padding: 0 22px; background: linear-gradient(135deg, #9333ea, #3b82f6); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { opacity: 0.9; transform: scale(1.02); }
+        .teach-box { display: flex; flex-direction: column; gap: 8px; background: #1f2937; padding: 12px; border-radius: 10px; border: 1px solid #374151; }
+        .teach-box input { padding: 10px; background: #111827; border: 1px solid #4b5563; color: white; border-radius: 6px; outline: none; font-size: 0.85rem; }
+        .teach-box input:focus { border-color: #6366f1; }
+        .teach-btn { padding: 10px; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .teach-btn:hover { opacity: 0.9; }
 
-        /* Admin Panel / Button */
-        #report-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; font-size: 0.75rem; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
-        #admin-panel { padding: 10px 20px; background: #0f172a; border-top: 1px solid rgba(255,255,255,0.05); display: none; text-align: center; gap: 10px; }
-        #admin-panel input { width: 200px; display: inline-block; padding: 8px; }
+        .status-badge { display: flex; align-items: center; justify-content: space-between; background: #1f2937; padding: 10px; border-radius: 8px; font-size: 0.8rem; border: 1px solid #374151; }
+        .status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
+
+        .report-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.85rem; }
+        .admin-link { margin-top: auto; text-align: center; font-size: 0.75rem; color: #9ca3af; cursor: pointer; }
+        .admin-link:hover { color: white; }
+
+        /* Sağ Chat Alanı */
+        #main-chat { flex: 1; display: flex; flex-direction: column; background: #0b0f19; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .message { padding: 14px 18px; border-radius: 12px; max-width: 75%; word-wrap: break-word; font-size: 0.95rem; line-height: 1.4; }
+        .user { background: #4f46e5; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .bot { background: #161e2e; color: #e2e8f0; align-self: flex-start; border: 1px solid #1f2937; border-bottom-left-radius: 2px; }
+
+        /* Alt Mesaj Yazma Alanı */
+        #input-container { display: flex; padding: 20px; background: #111827; border-top: 1px solid #1f2937; gap: 12px; }
+        #user-input { flex: 1; padding: 14px 18px; background: #0b0f19; border: 1px solid #374151; color: white; border-radius: 10px; outline: none; font-size: 0.95rem; }
+        #user-input:focus { border-color: #6366f1; }
+        .send-btn { padding: 0 25px; background: #7c3aed; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .send-btn:hover { background: #6d28d9; }
     </style>
 </head>
 <body>
 
-    <header>
-        BVACE AI
-        <span id="cloud-status">Bulut: Bağlanıyor...</span>
-        <button id="report-btn" onclick="openAdmin()">Admin</button>
-    </header>
+    <!-- Sol Kontrol Paneli -->
+    <div id="sidebar">
+        <div class="logo-area">
+            <div class="logo-icon">B</div>
+            <div class="logo-text">
+                <h1>BVACE</h1>
+                <p>COLLECTIVE BRAIN</p>
+            </div>
+        </div>
 
-    <div id="chat-container">
-        <div class="message bot">Selam kanka! Eski şık tasarımıma geri döndüm ve arkaya Firebase bulutunu bağladım. Artık her yerden ortak öğreniyoruz!</div>
+        <div class="section-title">Bvace'ye Laf Öğret</div>
+        <div class="teach-box">
+            <input type="text" id="teach-q" placeholder="Kullanıcı der ki...">
+            <input type="text" id="teach-a" placeholder="Bvace desin ki...">
+            <button class="teach-btn" onclick="teachCloud()">Ortak Havuza Öğret</button>
+        </div>
+
+        <div class="status-badge">
+            <span id="memory-count">Ortak Ağ: Yükleniyor...</span>
+            <div class="status-dot"></div>
+        </div>
+
+        <div class="report-btn" onclick="openReport()">
+            🚨 Rapor Paneli (<span id="report-count">1</span>)
+        </div>
+
+        <div class="admin-link" onclick="adminLogin()">
+            🔒 Çıkış Yap (Admin)
+        </div>
     </div>
 
-    <div id="admin-panel">
-        <input type="password" id="admin-pass" placeholder="Admin Şifresi...">
-        <button onclick="checkAdmin()">Giriş Yap</button>
-    </div>
+    <!-- Sağ Sohbet Alanı -->
+    <div id="main-chat">
+        <div id="chat-container">
+            <div class="message bot">Ben Bvace. Herkesin bana öğretebileceği bir sohbet botuyum, kokokae tarafından geliştirildim. Bana bir şey sor veya sol panelden yeni laf öğret.</div>
+        </div>
 
-    <div id="input-container">
-        <input type="text" id="user-input" placeholder="Mesaj yaz veya 'Soru | Cevap' ile öğret..." onkeypress="handleKey(event)">
-        <button onclick="sendMessage()">Gönder</button>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Bvace ile konuş..." onkeypress="handleKey(event)">
+            <button class="send-btn" onclick="sendMessage()">Gönder</button>
+        </div>
     </div>
 
     <!-- Firebase SDK (Modular v10) -->
@@ -95,9 +129,35 @@
                 querySnapshot.forEach((doc) => {
                     cloudMemory.push(doc.data());
                 });
-                document.getElementById("cloud-status").innerText = "Bulut: Aktif 🚀";
+                document.getElementById("memory-count").innerText = `Ortak Ağ: ${cloudMemory.length} Laf`;
             } catch (e) {
-                document.getElementById("cloud-status").innerText = "Bulut: Hata!";
+                document.getElementById("memory-count").innerText = "Ortak Ağ: Hata!";
+            }
+        }
+
+        async function teachCloud() {
+            const qInput = document.getElementById("teach-q");
+            const aInput = document.getElementById("teach-a");
+            const q = qInput.value.trim().toLowerCase();
+            const a = aInput.value.trim();
+
+            if (!q || !a) {
+                alert("Lütfen iki alanı da doldur kanka!");
+                return;
+            }
+
+            try {
+                await window.bvaceFirestore.addDoc(window.bvaceFirestore.collection(window.bvaceDB, "memory"), { soru: q, cevap: a });
+                cloudMemory.push({ soru: q, cevap: a });
+                document.getElementById("memory-count").innerText = `Ortak Ağ: ${cloudMemory.length} Laf`;
+                
+                appendMessage(`Öğretilen: ${q} | ${a}`, "user");
+                appendMessage("Eyvallah kanka, bunu ortak bulut havuzuna çaktım! Artık herkes bilecek.", "bot");
+                
+                qInput.value = "";
+                aInput.value = "";
+            } catch (e) {
+                alert("Buluta kaydederken hata oluştu kanka!");
             }
         }
 
@@ -109,21 +169,6 @@
             appendMessage(text, "user");
             inputField.value = "";
 
-            if (text.includes("|")) {
-                const parts = text.split("|");
-                const q = parts[0].trim().toLowerCase();
-                const a = parts[1].trim();
-
-                try {
-                    await window.bvaceFirestore.addDoc(window.bvaceFirestore.collection(window.bvaceDB, "memory"), { soru: q, cevap: a });
-                    cloudMemory.push({ soru: q, cevap: a });
-                    appendMessage("Eyvallah kanka, bunu buluta kaydettim artık tüm cihazlar bilecek!", "bot");
-                } catch (e) {
-                    appendMessage("Kanka buluta kaydederken hata oluştu!", "bot");
-                }
-                return;
-            }
-
             const cleanText = text.toLowerCase();
             let found = cloudMemory.find(item => cleanText.includes(item.soru));
 
@@ -131,7 +176,7 @@
                 if (found) {
                     appendMessage(found.cevap, "bot");
                 } else {
-                    appendMessage("Kanka bunu henüz bilmiyorum. Öğretmek için 'Soru | Cevap' yazabilirsin.", "bot");
+                    appendMessage("Kanka bunu henüz bilmiyorum, sol taraftan öğretebilirsin.", "bot");
                 }
             }, 300);
         }
@@ -151,18 +196,21 @@
             }
         }
 
-        function openAdmin() {
-            const panel = document.getElementById("admin-panel");
-            panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+        function openReport() {
+            const pass = prompt("Admin Şifresi:");
+            if (pass === "bvaceAndKOKOKAE123") {
+                alert("Rapor paneli boş, her şey temiz kanka!");
+            } else if (pass !== null) {
+                alert("Hatalı şifre!");
+            }
         }
 
-        function checkAdmin() {
-            const pass = document.getElementById("admin-pass").value;
+        function adminLogin() {
+            const pass = prompt("Admin Şifresi Gir:");
             if (pass === "bvaceAndKOKOKAE123") {
-                alert("Admin paneli başarıyla açıldı!");
-                document.getElementById("admin-panel").style.display = "none";
-            } else {
-                alert("Hatalı şifre kanka!");
+                alert("Admin yetkisi doğrulandı!");
+            } else if (pass !== null) {
+                alert("Hatalı şifre!");
             }
         }
     </script>
